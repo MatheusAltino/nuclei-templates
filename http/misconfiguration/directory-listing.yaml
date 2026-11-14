@@ -1,0 +1,37 @@
+id: directory-listing
+
+info:
+  name: Directory Listing Enabled
+  author: MatheusAltino
+  severity: low
+  description: |
+    Detecta servidores com directory listing habilitado, o que pode expor 
+    estrutura de arquivos e arquivos sensíveis não protegidos.
+  tags: misconfig,exposure,directory
+  metadata:
+    max-request: 1
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Index of /"
+          - "Directory listing for"
+          - "[To Parent Directory]"
+          - "Parent Directory"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: header
+        words:
+          - "text/html"

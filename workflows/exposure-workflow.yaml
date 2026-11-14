@@ -1,0 +1,9 @@
+id: custom-exposure-workflow
+
+info:
+  name: Custom Exposure Checks Workflow
+  author: MatheusAltino
+  description: Workflow que executa todos os templates de exposição customizados
+
+workflows:
+  - template: http/exposures/

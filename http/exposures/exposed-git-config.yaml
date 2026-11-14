@@ -1,0 +1,53 @@
+id: exposed-git-config
+
+info:
+  name: Exposed Git Config File
+  author: MatheusAltino
+  severity: medium
+  description: |
+    Detecta arquivos .git/config publicamente acessíveis. 
+    Esses arquivos podem expor a estrutura do repositório, URLs de remote 
+    e em alguns casos credenciais embutidas.
+  reference:
+    - https://www.acunetix.com/vulnerabilities/web/git-repository-found/
+  classification:
+    cwe-id: CWE-200
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+    cvss-score: 5.3
+  tags: git,exposure,config,disclosure
+  metadata:
+    max-request: 1
+    verified: true
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/config"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "[core]"
+          - "repositoryformatversion"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: header
+        words:
+          - "text/plain"
+          - "application/octet-stream"
+        condition: or
+
+    extractors:
+      - type: regex
+        name: remote-url
+        part: body
+        regex:
+          - 'url\s*=\s*(.+)'
+        group: 1
